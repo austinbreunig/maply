@@ -57,6 +57,7 @@ class Shape:
 class Polygon(Shape):
     origin: Optional[Tuple[float, float]] = field(default=None)
     size: Optional[Tuple[float, float]] = field(default=None)
+    interior : Optional[List[List[float]]] = field(default=None)  # For holes in the polygon
     geometry: object = field(init=False)
     
     def __post_init__(self):
@@ -72,7 +73,8 @@ class Polygon(Shape):
         else:
             raise ValueError("Must provide either `origin` and `size`, or `coords`.")
         
-        self.geometry = ShapelyPolygon(self.coords)
+        holes = self.interior or []
+        self.geometry = ShapelyPolygon(self.coords, holes=holes)
 
     def split_grid(self, rows: int, cols: int) -> List['Polygon']:
         """Splits the polygon into a grid of `rows x cols` smaller polygons."""
@@ -109,6 +111,9 @@ class MultiPolygon(Shape):
                 raise TypeError("MultiPolygon must be initialized with Polygon instances or coordinate lists.")
 
         self.geometry = ShapelyMultiPolygon(processed_polygons)
+        geoms = list(self.geometry.geoms)  # Store the coordinates of the MultiPolygon for potential use
+        self.coords = [list(geom.exterior.coords) for geom in geoms]  # Store the coordinates of the MultiPolygon for potential use
+
 
 
 @dataclass
@@ -139,6 +144,8 @@ class MultiLine(Shape):
                 raise TypeError("MultiLine must be initialized with Line instances or coordinate lists.")
             
         self.geometry = ShapelyMultiLineString(processed_lines)
+        geoms = list(self.geometry.geoms)  # Store the coordinates of the MultiLineString for potential use
+        self.coords = [list(geom.coords) for geom in geoms]  # Store the coordinates of the MultiLineString for potential use
 
 @dataclass
 class Point(Shape):
@@ -168,4 +175,8 @@ class MultiPoint(Shape):
                 raise TypeError("MultiPoint must be initialized with Point instances or coordinate tuples.")
             
         self.geometry = ShapelyMultiPoint(processed_points)
+        geoms = list(self.geometry.geoms)
+        self.coords = [list(geom.coords) for geom in geoms]
+
+
 

@@ -109,7 +109,12 @@ def main():
     run_command("python -m build", dry_run=args.dry_run)
 
     run_command("git add pyproject.toml", dry_run=args.dry_run)
-    run_command(f"git commit -m 'Release v{new_version}'", dry_run=args.dry_run)
+
+    diff_result = subprocess.run("git diff --cached --quiet", shell=True)
+    if diff_result.returncode != 0:
+        run_command(f'git commit -m "Release v{new_version}"', dry_run=args.dry_run)
+    else:
+        print("🟡 Nothing staged to commit (version may already be set?)")
     run_command(f"git tag v{new_version}", dry_run=args.dry_run)
     run_command("git push origin main --tags", dry_run=args.dry_run)
 

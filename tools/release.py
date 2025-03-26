@@ -108,14 +108,17 @@ def main():
 
     run_command("python -m build", dry_run=args.dry_run)
 
+    # Step 1: bump version
     run_command("git add pyproject.toml", dry_run=args.dry_run)
-
-    diff_result = subprocess.run("git diff --cached --quiet", shell=True)
-    if diff_result.returncode != 0:
-        run_command(f'git commit -m "Release v{new_version}"', dry_run=args.dry_run)
-    else:
-        print("🟡 Nothing staged to commit (version may already be set?)")
+    run_command(f'git commit -m "Bump version to {new_version}"', dry_run=args.dry_run)
     run_command(f"git tag v{new_version}", dry_run=args.dry_run)
+
+    # Step 2: generate changelog
+    release_notes = generate_changelog(new_version, prev_version)
+    run_command("git add CHANGELOG.md", dry_run=args.dry_run)
+    run_command(f'git commit -m "Update changelog for v{new_version}"', dry_run=args.dry_run)
+
+    # Step 3: push
     run_command("git push origin main --tags", dry_run=args.dry_run)
 
     generate_changelog(new_version, prev_version)

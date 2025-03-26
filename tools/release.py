@@ -28,7 +28,7 @@ def update_pyproject_version(bump_type: str, dry_run=False):
 
     if not dry_run:
         data["project"]["version"] = new_version
-        with open("..\pyproject.toml", "w", encoding="utf-8") as f:
+        with open("pyproject.toml", "w", encoding="utf-8") as f:
             f.write(tomlkit.dumps(data))
 
     return current_version, new_version
@@ -47,7 +47,16 @@ def check_git_clean():
 def generate_changelog(version, previous_version):
     timestamp = datetime.date.today().isoformat()
     changelog_path = Path("CHANGELOG.md")
-    entry = f"## v{version} - {timestamp}\n\n- _Describe changes here_\n\n"
+
+    try:
+        log = subprocess.check_output(
+            f'git log v{previous_version}..HEAD --pretty=format:"- %s"',
+            shell=True,
+            text=True
+        )
+        entry = f"## v{version} - {timestamp}\n\n{log.strip()}\n\n"
+    except subprocess.CalledProcessError:
+        entry = f"## v{version} - {timestamp}\n\n- _No previous tag found; update manually._\n\n"
 
     if changelog_path.exists():
         content = changelog_path.read_text()
@@ -56,11 +65,15 @@ def generate_changelog(version, previous_version):
         changelog_path.write_text("# Changelog\n\n" + entry)
 
     print("📝 CHANGELOG.md updated")
+    return entry.strip()
+
 
 def main():
     parser = argparse.ArgumentParser(description="Automate release flow")
     parser.add_argument("bump", choices=["patch", "minor", "major"], help="Type of version bump")
     parser.add_argument("--dry-run", action="store_true", help="Simulate everything without making changes")
+    parser.add_argument("--prerelease", action="store_true", help="Mark the GitHub release as a pre-release")
+
     args = parser.parse_args()
 
     # Prevent releasing from any branch other than main
@@ -87,11 +100,14 @@ def main():
     generate_changelog(new_version, prev_version)
 
     wheel_path = f"dist/maply-{new_version}-py3-none-any.whl"
-    release_notes = input("📝 GitHub release notes (press Enter to skip): ").strip()
+    release_notes = generate_changelog(new_version, prev_version)
 
     cmd = f'gh release create v{new_version} {wheel_path} -t "v{new_version}"'
     if release_notes:
         cmd += f' -n "{release_notes}"'
+    
+    if args.prerelease:
+        cmd += " --prerelease"
 
     run_command(cmd, dry_run=args.dry_run)
 

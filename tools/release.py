@@ -28,7 +28,7 @@ def update_pyproject_version(bump_type: str, dry_run=False):
 
     if not dry_run:
         data["project"]["version"] = new_version
-        with open("pyproject.toml", "w", encoding="utf-8") as f:
+        with open("..\pyproject.toml", "w", encoding="utf-8") as f:
             f.write(tomlkit.dumps(data))
 
     return current_version, new_version

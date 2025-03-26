@@ -3,8 +3,8 @@ from typing import List, Dict, Any, Optional, Tuple, Union
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 import matplotlib.lines as mlines
-from geometry import Shape  # Import your Shape class and its subclasses
 import geopandas as gpd
+from maply.geometry import Shape
 
 @dataclass
 class Map:

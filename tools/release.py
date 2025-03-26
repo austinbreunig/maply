@@ -1,6 +1,8 @@
 import os
 import subprocess
 import tomlkit
+import shutil
+import glob
 import argparse
 import datetime
 from pathlib import Path
@@ -66,6 +68,16 @@ def generate_changelog(version, previous_version):
 
     print("📝 CHANGELOG.md updated")
     return entry.strip()
+
+
+
+def clean_build_dirs():
+    for path in ["dist", "build"]:
+        shutil.rmtree(path, ignore_errors=True)
+
+    for egg_info in glob.glob("*.egg-info"):
+        shutil.rmtree(egg_info, ignore_errors=True)
+
 
 
 def main():

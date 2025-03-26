@@ -101,7 +101,11 @@ def main():
 
     print(f"\n🔧 Version bump: {prev_version} → {new_version}\n")
 
-    run_command("rm -rf dist build *.egg-info", dry_run=args.dry_run)
+    if not args.dry_run:
+        clean_build_dirs()
+    else:
+        print("🧼 [dry-run] Would clean: dist/, build/, and *.egg-info")
+
     run_command("python -m build", dry_run=args.dry_run)
 
     run_command("git add pyproject.toml", dry_run=args.dry_run)

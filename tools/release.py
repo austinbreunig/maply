@@ -121,10 +121,7 @@ def main():
     # Step 3: push
     run_command("git push origin main --tags", dry_run=args.dry_run)
 
-    generate_changelog(new_version, prev_version)
-
     wheel_path = f"dist/maply-{new_version}-py3-none-any.whl"
-    release_notes = generate_changelog(new_version, prev_version)
 
     cmd = f'gh release create v{new_version} {wheel_path} -t "v{new_version}"'
     if release_notes:

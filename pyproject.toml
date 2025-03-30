@@ -27,5 +27,13 @@ dependencies = [
 
 [project.optional-dependencies]
 draw = ["folium", "plotly"]
-dev = ["ipykernel", "pytest", "tomlkit", "build"]
+dev = [
+"ipykernel", 
+"pytest", 
+"tomlkit", 
+"build", 
+sphinx,
+sphinx-autodoc-typehints,
+sphinx-rtd-theme
+]
 

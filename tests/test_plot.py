@@ -49,7 +49,7 @@ class TestMap:
         assert isinstance(stored_shape, MyPolygon)
         assert stored_shape.data["label"] == "Block"
 
-    def test_plot_does_not_crash(monkeypatch):
+    def test_plot_does_not_crash(self, monkeypatch):
         shape = Point(coords=(0, 0), data={"name": "Origin"})
         m = Map(title="Test Plot")
         m.add_shape(shape, label="name")

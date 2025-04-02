@@ -56,5 +56,5 @@ m.plot(label='Shape')
 
 ```
 
-## Example Notebooks
-- [Introduction]()
+## Example Notebook
+- [Spatial Join](examples\spatial_join.ipynb)

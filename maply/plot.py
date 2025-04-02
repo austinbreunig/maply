@@ -91,7 +91,7 @@ class Map:
                     geom = shape.geometry
                 elif source_type == "gdf":
                     gdf = item["data"]
-                    geom = gdf.unary_union  # Combine all geometries to compute a centroid
+                    geom = gdf.union_all()  # Combine all geometries to compute a centroid
                 else:
                     continue
                 
@@ -135,7 +135,9 @@ class Map:
             if source_type == "shape":
                 geometry = info["shapes"][0]["data"].geometry
             elif source_type == "gdf":
-                geometry = info
+                geometry = info["shapes"][0]["data"].geometry.iloc[0]  # Get the first geometry for legend proxy.
+            else:
+                continue
         
         # Create a proxy patch for legend.
             if hasattr(geometry, 'geom_type'):

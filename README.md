@@ -22,7 +22,11 @@ examples — without typing out coordinate tuples by hand.
   pushing Python geometry back onto the map to inspect and edit it.
 
 ## Install
-
+### Usage
+```bash
+pip install maply
+```
+### Dev
 ```bash
 pip install -e .              # core
 pip install -e ".[geopandas]" # + GeoDataFrame export

@@ -38,6 +38,7 @@ dev = [
     "ruff>=0.4",
     "geopandas>=0.13",
     "ipyleaflet>=0.18",
+    "ipykernel>=6.0",
 ]
 
 [project.urls]
@@ -60,3 +61,8 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.0",
+]
